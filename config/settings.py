@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
+from datetime import timedelta
 from pathlib import Path
+
+import stripe
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +40,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django_celery_beat',
+    'rest_framework_simplejwt',  # Этот пакет для авторизации!
+    'drf_yasg',  # Это пакет для Swagger(документация)
+    'rest_framework',
+    'corsheaders',  # Это механизм безопасности браузера, который ограничивает запросы, отправляемые с веб-страницы в один домен, к ресурсам, расположенным на другом домене
+
+    'habits',
+    'user',
+    'telegram_bot',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -75,8 +89,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'habits',
+        'USER': 'postgres',
+        'PASSWORD': 'qwerty',
+        'HOST': '127.0.0.1',
+        'PORT': 5432,
     }
 }
 
@@ -105,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -121,3 +139,53 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = 'user.User'
+
+REST_FRAMEWORK = {           # Настройки JWT-токенов
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [   # Это для прав доступа
+            'rest_framework.permissions.AllowAny',
+    ]
+}
+
+SIMPLE_JWT = {  # Настройки срока действия токенов
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=150),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}
+
+
+CELERY_BEAT_SCHEDULE = {
+    'task-name': {
+        'task': 'telegram_bot.tasks.check_time_habit',  # Путь к задаче
+        'schedule': timedelta(seconds=20),  # Расписание выполнения задачи (например, каждые 10 минут)
+    },
+}
+
+CELERY_BROKER_URL = 'redis://localhost:6379'  # Например, Redis, который по умолчанию работает на порту 6379
+
+# URL-адрес брокера результатов, также Redis
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+
+# Часовой пояс для работы Celery
+CELERY_TIMEZONE = "Europe/Moscow"
+
+# Флаг отслеживания выполнения задач
+CELERY_TASK_TRACK_STARTED = True
+
+# Максимальное время на выполнение задачи
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+
+#telegramapi_key = os.getenv('telegramapi_key')
+
+
+CORS_ALLOWED_ORIGINS = [  # CORS
+    "http://localhost:8000",
+]
+CSRF_TRUSTED_ORIGINS = [  # CORS
+    "http://localhost:8000",
+]
+
+CORS_ALLOW_ALL_ORIGINS = False  # CORS
