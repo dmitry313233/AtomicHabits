@@ -10,7 +10,7 @@ from habits.serializers import HabitsSerializer
 
 
 class HabitsCreateListAPIView(generics.ListCreateAPIView):
-    """Создание привычки"""
+    """Обрабатывает методы 'GET', 'POST'"""
     serializer_class = HabitsSerializer
     permission_classes = [IsAuthenticated]
     queryset = Habits.objects.all()
@@ -44,11 +44,10 @@ class HabitsCreateListAPIView(generics.ListCreateAPIView):
 #     pagination_class = HabitsPaginator  # Выводит 5 привычек на странице
 #     permission_classes = [IsAuthenticated]
 #     queryset = Habits.objects.all()
-#
-
 
 
 class HabitView(RetrieveUpdateDestroyAPIView):  # Этот класс прописан для уменьшения кода
+    """Обрабатывает методы 'PUT', 'PATCH', DELETE'"""
     serializer_class = HabitsSerializer
     permission_classes = [IsOwner]
     queryset = Habits.objects.all()

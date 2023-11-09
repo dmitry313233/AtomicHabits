@@ -14,9 +14,12 @@ from datetime import timedelta
 from pathlib import Path
 
 import stripe
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -90,11 +93,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'habits',
-        'USER': 'postgres',
-        'PASSWORD': 'qwerty',
-        'HOST': '127.0.0.1',
-        'PORT': 5432,
+        'NAME': os.getenv('database_name'),
+        'USER': os.getenv('database_user'),
+        'PASSWORD': os.getenv('database_password'),
+        'HOST': os.getenv('database_host'),
+        'PORT': os.getenv('database_port'),
     }
 }
 
