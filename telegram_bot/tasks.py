@@ -13,9 +13,8 @@ dotenv.load_dotenv()   # Это для файла .env
 def check_time_habit():
     datatime_now = datetime.now()
     time_now = datatime_now.strftime("%H:%M:00")
-    habits = Habits.objects.filter(time=time_now)
-    for habit in habits:
-        if habit:
-            bot = TeleBot(os.getenv('telegramapi_key'))
-            #bot.send_message(947497532, 'skypro')  # Привязка к телеграмм боту
-            bot.send_message(os.getenv('chat_id_telegram'), os.getenv('chat_name'))
+    habits = Habits.objects.get(time=time_now)
+    if habits:
+        bot = TeleBot(os.getenv('telegramapi_key'))
+        #bot.send_message(947497532, 'skypro')  # Привязка к телеграмм боту
+        bot.send_message(habits.user.user_telegram_id, f' вам нужно сделать {habits.action}')
