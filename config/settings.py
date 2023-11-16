@@ -97,7 +97,6 @@ DATABASES = {
         'USER': os.getenv('database_user'),
         'PASSWORD': os.getenv('database_password'),
         'HOST': os.getenv('database_host'),
-        'PORT': os.getenv('database_port'),
     }
 }
 
@@ -166,10 +165,10 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-CELERY_BROKER_URL = 'redis://localhost:6379'  # Например, Redis, который по умолчанию работает на порту 6379
+CELERY_BROKER_URL = 'redis://redis:6379'  # Например, Redis, который по умолчанию работает на порту 6379 # Был localhost
 
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://redis:6379'  # Был localhost
 
 # Часовой пояс для работы Celery
 CELERY_TIMEZONE = "Europe/Moscow"
